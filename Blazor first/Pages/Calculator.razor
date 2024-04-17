@@ -1,40 +1,93 @@
 ﻿@page "/calculator"
+@using System
 
 <PageTitle>Calculator</PageTitle>
 
-<h3>Component</h3>
+<h3>Calculator</h3>
 
-
-<div class="calculator">
-    <input type="text" class="form-control" />
-</div>
+<div>
+    <div>@currentNumber</div>
 
 <div class="calculator-row">
-    <button class="one" type="button">1</button>
-    <button class="two" type="button">2</button>
-    <button class="three" type="button">3</button>
-    <button class="plus" type="button">+</button>
+        <button @onclick="(() => NumberClicked(1))">1</button>
+        <button @onclick="(() => NumberClicked(2))">2</button>
+        <button @onclick="(() => NumberClicked(3))">3</button>
+        <button @onclick="(() => OperatorClicked('+'))">+</button>
 </div>
 <div class="calculator-row">
-    <button class="four" type="button">4</button>
-    <button class="five" type="button">5</button>
-    <button class="six" type="button">6</button>
-    <button class="minus" type="button">-</button>
+        <button @onclick="(() => NumberClicked(4))">4</button>
+        <button @onclick="(() => NumberClicked(5))">5</button>
+        <button @onclick="(() => NumberClicked(6))">6</button>
+        <button @onclick="(() => OperatorClicked('-'))">-</button>
 </div>
 <div class="calculator-row">
-    <button class="seven" type="button">7</button>
-    <button class="eight" type="button">8</button>
-    <button class="nine" type="button">9</button>
-    <button class="multiplication" type="button">*</button>
+        <button @onclick="(() => NumberClicked(7))">7</button>
+        <button @onclick="(() => NumberClicked(8))">8</button>
+        <button @onclick="(() => NumberClicked(9))">9</button>
+        <button @onclick="(() => OperatorClicked('*'))">*</button>
 </div>
 <div class="calculator-row">
-    <button class="equally" type="button">=</button>
-    <button class="zero" type="button">0</button>
-    <button class="division" type="button">/</button>
+        <button @onclick="CalculateResult">=</button>
+        <button @onclick="(() => NumberClicked(0))">0</button>
+        <button @onclick="(() => OperatorClicked('/'))">/</button>
 </div>
-    
-
+  
+</div>
 
 @code {
-    
+    string currentNumber = "";
+    char? lastOperator = null;
+    int? firstNumber = null;
+
+    void NumberClicked(int number)
+    {
+        currentNumber += number.ToString();
+    }
+
+    void OperatorClicked(char operatorChar)
+    {
+        if (!string.IsNullOrEmpty(currentNumber))
+        {
+            if (lastOperator != null)
+            {
+                CalculateResult();
+            }
+
+            firstNumber = int.Parse(currentNumber);
+            currentNumber = "";
+            lastOperator = operatorChar;
+        }
+    }
+
+    void CalculateResult()
+    {
+        if (!string.IsNullOrEmpty(currentNumber) && firstNumber != null && lastOperator != null)
+        {
+            int secondNumber = int.Parse(currentNumber);
+            int result = 0;
+            switch (lastOperator)
+            {
+                case '+':
+                    result = firstNumber.Value + secondNumber;
+                    break;
+                case '-':
+                    result = firstNumber.Value - secondNumber;
+                    break;
+                case '*':
+                    result = firstNumber.Value * secondNumber;
+                    break;
+                case '/':
+                    if (secondNumber != 0)
+                    {
+                        result = firstNumber.Value / secondNumber;
+                    }
+                    else
+                    {}
+                    break;
+            }
+            currentNumber = result.ToString();
+            firstNumber = result;
+            lastOperator = null;
+        }
+    }
 }
